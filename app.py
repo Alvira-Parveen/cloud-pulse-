@@ -18,7 +18,10 @@ _client = None
 def get_col(name):
     global _client
     if _client is None:
-        _client = MongoClient(MONGO_URI)
+        _client = MongoClient(
+            MONGO_URI,
+            serverSelectionTimeoutMS=5000
+        )
     return _client["cloudpulse"][name]
 
 @app.before_request
