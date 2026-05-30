@@ -21,7 +21,6 @@ def get_col(name):
         _client = MongoClient(MONGO_URI)
     return _client["cloudpulse"][name]
 
-# ─── Middleware: log every request ───────────────────────────────────────────
 @app.before_request
 def log_request():
     if not request.path.startswith("/static"):
@@ -36,7 +35,6 @@ def log_request():
         except Exception:
             pass
 
-# ─── Auth decorator ──────────────────────────────────────────────────────────
 def login_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -45,7 +43,6 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated
 
-# ─── Routes ──────────────────────────────────────────────────────────────────
 @app.route("/")
 def index():
     if "username" in session:
@@ -101,61 +98,34 @@ def logout():
 def dashboard():
     return render_template("dashboard.html", username=session["username"])
 
-# ─── API: metrics ─────────────────────────────────────────────────────────────
 @app.route("/api/metrics")
 @login_required
 def api_metrics():
     now = datetime.utcnow()
     one_hour_ago = now - timedelta(hours=1)
     one_day_ago = now - timedelta(days=1)
-
     logs = get_col("request_logs")
     users = get_col("users")
-
     uptime_seconds = int(time.time() - START_TIME)
     hours, rem = divmod(uptime_seconds, 3600)
     minutes, seconds = divmod(rem, 60)
     uptime_str = f"{hours}h {minutes}m {seconds}s"
-
     total_users = users.count_documents({})
-    active_users = logs.distinct("user", {
-        "timestamp": {"$gte": one_hour_ago},
-        "user": {"$ne": "anonymous"}
-    })
+    active_users = logs.distinct("user", {"timestamp": {"$gte": one_hour_ago}, "user": {"$ne": "anonymous"}})
     total_requests = logs.count_documents({})
     requests_today = logs.count_documents({"timestamp": {"$gte": one_day_ago}})
-
-    recent_logs = list(logs.find(
-        {}, {"_id": 0, "path": 1, "method": 1, "user": 1, "ip": 1, "timestamp": 1}
-    ).sort("timestamp", -1).limit(10))
+    recent_logs = list(logs.find({}, {"_id": 0, "path": 1, "method": 1, "user": 1, "ip": 1, "timestamp": 1}).sort("timestamp", -1).limit(10))
     for log in recent_logs:
         log["timestamp"] = log["timestamp"].strftime("%H:%M:%S")
-
     hourly = []
     for i in range(11, -1, -1):
         start = now - timedelta(hours=i+1)
         end = now - timedelta(hours=i)
         count = logs.count_documents({"timestamp": {"$gte": start, "$lt": end}})
         hourly.append({"hour": start.strftime("%H:00"), "count": count})
-
-    pipeline = [
-        {"$group": {"_id": "$path", "count": {"$sum": 1}}},
-        {"$sort": {"count": -1}},
-        {"$limit": 5}
-    ]
+    pipeline = [{"$group": {"_id": "$path", "count": {"$sum": 1}}}, {"$sort": {"count": -1}}, {"$limit": 5}]
     top_routes = [{"path": r["_id"], "count": r["count"]} for r in logs.aggregate(pipeline)]
-
-    return jsonify({
-        "uptime": uptime_str,
-        "total_users": total_users,
-        "active_users": len(active_users),
-        "total_requests": total_requests,
-        "requests_today": requests_today,
-        "recent_logs": recent_logs,
-        "hourly_chart": hourly,
-        "top_routes": top_routes,
-        "server_status": "ONLINE"
-    })
+    return jsonify({"uptime": uptime_str, "total_users": total_users, "active_users": len(active_users), "total_requests": total_requests, "requests_today": requests_today, "recent_logs": recent_logs, "hourly_chart": hourly, "top_routes": top_routes, "server_status": "ONLINE"})
 
 @app.route("/api/health")
 def health():
