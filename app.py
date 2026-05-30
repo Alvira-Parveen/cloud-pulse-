@@ -23,17 +23,16 @@ def get_col(name):
 
 @app.before_request
 def log_request():
-    if not request.path.startswith("/static"):
-        try:
-            get_col("request_logs").insert_one({
-                "path": request.path,
-                "method": request.method,
-                "ip": request.remote_addr,
-                "user": session.get("username", "anonymous"),
-                "timestamp": datetime.utcnow()
-            })
-        except Exception:
-            pass
+    try:
+        get_col("request_logs").insert_one({
+            "path": request.path,
+            "method": request.method,
+            "ip": request.remote_addr,
+            "user": session.get("username", "anonymous"),
+            "timestamp": datetime.utcnow()
+        })
+    except Exception as e:
+        print("Mongo Error:", e)
 
 def login_required(f):
     @wraps(f)
