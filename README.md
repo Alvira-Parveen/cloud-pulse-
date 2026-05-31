@@ -7,7 +7,9 @@ A production-style cloud-hosted web application with real-time monitoring, user 
 ---
 
 ## 🚀 Live Demo
-mongodb+srv://Cloud:IvS3bE1Bb9GwzAx2@cluster0.a2enqku.mongodb.net/cloudpulse 
+
+https://cloud-pulse-l4lr.onrender.com/login
+
 ---
 
 ## 🏗️ Architecture
