@@ -1,6 +1,6 @@
 # ☁️ CloudPulse — Scalable Web App Deployment on Cloud
 
-> **Cloud Computing Capstone Project** | SkillOrbit | Python Flask + MongoDB Atlas + Render
+> **Cloud Computing Capstone Project** | Python Flask + MongoDB Atlas + Render
 
 A production-style cloud-hosted web application with real-time monitoring, user authentication, and a live analytics dashboard — built to satisfy all 5 modules of the capstone project.
 
@@ -141,32 +141,5 @@ git push -u origin main
 
 ---
 
-## 📋 Evaluation Criteria Mapping
-
-| Criteria | Weightage | How it's covered |
-|----------|-----------|-----------------|
-| Functionality | 30% | Full auth system + live dashboard |
-| Cloud Deployment | 25% | Render + render.yaml + auto-deploy |
-| Database Integration | 15% | MongoDB Atlas, 3 collections |
-| Scalability & Monitoring | 15% | Gunicorn workers + metrics API |
-| Documentation | 10% | This README + architecture diagram |
-| Presentation | 5% | Dashboard UI is the demo |
-
----
-
-## 🔗 Deliverables Checklist
-
-- [x] Source Code (this repo)
-- [ ] Deployment Link (paste after deploying)
-- [x] GitHub Repository
-- [ ] Project Report (submit separately)
-- [ ] PPT Presentation
-- [x] Architecture Diagram (see above)
-- [ ] Demo Video (record your dashboard)
-
----
-
 ## 👩‍💻 Author
 
-**Alvira Parveen** | B.Tech CSE (AI/ML) | Sharda University  
-GitHub: [github.com/Alvira-Parveen](https://github.com/Alvira-Parveen)
